@@ -30,7 +30,7 @@ namespace Morphologue.IdentityWsClient
                 case HttpStatusCode.NotFound:
                     return null;
                 case HttpStatusCode.OK:
-                    return new Alias(_json, callee, response.Content["confirmToken"].ToString());
+                    return new Alias(_json, callee, emailAddress, response.Content["confirmToken"]?.ToString());
                 default:
                     response.StatusCode.Throw();
                     return null;
@@ -49,7 +49,7 @@ namespace Morphologue.IdentityWsClient
                 case HttpStatusCode.Conflict:
                     throw new IdentityException(response.StatusCode, "The email address is not available");
                 case HttpStatusCode.NoContent:
-                    return new Alias(_json, callee);
+                    return new Alias(_json, callee, emailAddress);
                 default:
                     response.StatusCode.Throw();
                     return null;
@@ -70,13 +70,13 @@ namespace Morphologue.IdentityWsClient
                 case HttpStatusCode.NotFound:
                     throw new IdentityException(response.StatusCode, $"Cannot find existing alias {otherEmailAddress}");
                 case HttpStatusCode.NoContent:
-                    return new Alias(_json, callee);
+                    return new Alias(_json, callee, emailAddress);
                 default:
                     response.StatusCode.Throw();
                     return null;
             }
         }
 
-        private string Callee(string emailAddress) => "aliases/" + emailAddress;
+        private string Callee(string emailAddress) => "aliases/" + WebUtility.UrlEncode(emailAddress);
     }
 }

@@ -18,7 +18,7 @@ namespace Morphologue.IdentityWsClient.Extensions
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
             foreach (KeyValuePair<string, object> kv in dict)
-                result.Add(kv.Key, kv.Value.ToString());
+                result.Add(kv.Key, kv.Value?.ToString());
             return result;
         }
 
