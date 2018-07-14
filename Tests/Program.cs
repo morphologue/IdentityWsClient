@@ -53,7 +53,7 @@ namespace Morphologue.IdentityWsClient.Tests
             ws.GetAliasAsync("test@test.org").Result.IsConfirmed.Should().BeTrue("it's a copy of the confirmed alias");
             alias2.FetchConfirmationTokenAsync().Wait();
             alias2.IsConfirmed.Should().BeFalse("confirmation is at the alias level");
-            alias2.Email("noreply@test.org", "Hello", "World!", "<html><body><strong>World!</strong></body></html>").Wait();
+            alias2.EmailAsync("noreply@test.org", "Hello", "World!", "<html><body><strong>World!</strong></body></html>").Wait();
 
             // Client creation
             alias1.GetClientAsync("test1").Result.Should().BeNull("the client has not been created yet");
@@ -69,21 +69,21 @@ namespace Morphologue.IdentityWsClient.Tests
             alias1.GetClientAsync("test2").Result.Data.Should().BeEquivalentTo(data, "it's a copy of the client just created with such data");
 
             // Login and alias deletion
-            Action oldPassword = () => client1.LogIn("password1").Wait();
+            Action oldPassword = () => client1.LogInAsync("password1").Wait();
             oldPassword.Should().Throw<IdentityException>().Which.StatusCode.Should().Be(HttpStatusCode.Unauthorized, "the password was changed");
-            client1.LogIn("strongest.password").Wait();
+            client1.LogInAsync("strongest.password").Wait();
             alias1.DeleteAsync().Wait();
             Action tooEnthusiastic = () => alias2.DeleteAsync().Wait();
             tooEnthusiastic.Should().Throw<IdentityException>().Which.StatusCode.Should().Be(HttpStatusCode.Forbidden, "one alias must remain");
-            client2.LogIn("strongest.password").Wait();
-            Action tooLate = () => client1.LogIn("strongest.password").Wait();
+            client2.LogInAsync("strongest.password").Wait();
+            Action tooLate = () => client1.LogInAsync("strongest.password").Wait();
             tooLate.Should().Throw<HttpRequestException>("the server will 404 because the alias has been deleted");
 
             // Client deletion
             client2.DeleteAsync().Wait();
             Alias alias2Copy = ws.GetAliasAsync("test.linked@test.org").Result;
             Client client1ViaAlias2Copy = alias2Copy.GetClientAsync("test1").Result;
-            client1ViaAlias2Copy.LogIn("strongest.password").Wait();
+            client1ViaAlias2Copy.LogInAsync("strongest.password").Wait();
             client1ViaAlias2Copy.DeleteAsync().Wait();
             ws.GetAliasAsync("test.linked@test.org").Result.Should().BeNull("everything should be deleted once the last service is deleted");
 
