@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net;
@@ -32,7 +33,10 @@ namespace Morphologue.IdentityWsClient
                 response.StatusCode.Throw();
         }
 
-        public async Task LogIn(string password)
+        [Obsolete("Use LogInAsync() instead")]
+        public Task LogIn(string password) => LogInAsync(password);
+
+        public async Task LogInAsync(string password)
         {
             JsonResponse response = await _json.PostAsync(_url + "/login", new JsonDict
             {

@@ -168,7 +168,11 @@ namespace Morphologue.IdentityWsClient
             }
         }
 
-        public async Task Email(string from, string subject, string bodyText, string bodyHtml = null, string replyTo = null,
+        [Obsolete("Use EmailAsync() instead")]
+        public Task Email(string from, string subject, string bodyText, string bodyHtml = null, string replyTo = null,
+            bool sendIfUnconfirmed = false) => EmailAsync(from, subject, bodyText, bodyHtml, replyTo, sendIfUnconfirmed);
+
+        public async Task EmailAsync(string from, string subject, string bodyText, string bodyHtml = null, string replyTo = null,
             bool sendIfUnconfirmed = false)
         {
             JsonResponse response = await _json.PostAsync(_url + "/email", new JsonDict
